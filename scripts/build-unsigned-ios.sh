@@ -47,7 +47,7 @@ xcodebuild \
 app="$(find "$root/build/AtTime.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' -type d -print -quit)"
 if [[ -z "$app" ]]; then echo "Real-device application was not produced"; exit 1; fi
 executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Info.plist")"
-lipo -verify_arch arm64 "$app/$executable"
+lipo "$app/$executable" -verify_arch arm64
 ditto "$app" "$root/build/package/Payload/$(basename "$app")"
 (cd "$root/build/package" && zip -qry "$root/build/AtTime-unsigned.ipa" Payload)
 (cd "$root/build" && shasum -a 256 AtTime-unsigned.ipa > SHA256SUMS)
