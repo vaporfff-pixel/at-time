@@ -1,0 +1,52 @@
+name: Free public iOS build (unsigned)
+
+# Deliberately manual only. Do not add push, schedule, or pull_request triggers.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: unsigned-ios
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Standard runners are free in PUBLIC repos. Refuse private repositories
+    # before allocating a runner rather than consuming a billable private quota.
+    if: github.event.repository.private == false
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      EXPO_NO_TELEMETRY: '1'
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install pinned package manager
+        run: npm install --global pnpm@11.25.0
+      - name: Install locked dependencies (no cloud cache)
+        run: pnpm install --frozen-lockfile
+      - name: Check application
+        run: |
+          pnpm typecheck
+          pnpm test
+      - name: Build real-device IPA without paid signing services
+        run: bash scripts/build-unsigned-ios.sh
+      - name: Publish unsigned package as a release asset
+        # Release assets avoid Actions artifact/cache storage. No upload-artifact
+        # or actions/cache step is used. No EAS build or Apple account is used.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "unsigned-${GITHUB_RUN_NUMBER}" \
+            --target "$GITHUB_SHA" \
+            --title "到点 · 未签名 iPhone 安装包 ${GITHUB_RUN_NUMBER}" \
+            --notes-file build/RELEASE_NOTES.txt \
+            build/AtTime-unsigned.ipa build/SHA256SUMS

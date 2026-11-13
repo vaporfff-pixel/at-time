@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "到点",
+    "slug": "at-time",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "scheme": "attime",
+    "backgroundColor": "#F6E6C6",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.attime.reminders",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "enableRemoteNotifications": false,
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "web": { "name": "到点 · 开发预览", "favicon": "./assets/icon.png" }
+  }
+}

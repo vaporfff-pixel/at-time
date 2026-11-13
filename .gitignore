@@ -1,0 +1,11 @@
+node_modules/
+.expo/
+dist-ios/
+dist-web/
+verification/
+*.log
+credentials.json
+.env*
+ios/
+build/
+connection/
